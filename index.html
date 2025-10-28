@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carta Especial</title>
+    <title>Carta</title>
     <style>
         * {
             margin: 0;
@@ -114,7 +114,7 @@
             border-radius: 25px;
             background: linear-gradient(45deg, #ff69b4, #ff1493);
             color: white;
-            cursor: pointer;
+            cursor: button;
             transition: all 0.3s ease;
             box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
             animation: pulse 1.5s infinite;
@@ -211,6 +211,45 @@
             border-top: 1px solid rgba(255, 105, 180, 0.2);
         }
 
+        /* New meta (De: / Para:) placed at the top area */
+        .letter-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: center;
+            padding: 8px 6px;
+            z-index: 2;
+            position: relative;
+            margin-bottom: 6px;
+            font-weight: 700;
+            color: #ff4081;
+            min-height: 40px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.98em;
+            color: #ff2f7a;
+        }
+
+        .meta-item .editable {
+            font-weight: 700;
+            color: #663300;
+            outline: none;
+            border-bottom: 1px dotted rgba(255,105,180,0.3);
+            padding: 2px 6px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 4px;
+            min-width: 70px;
+            display: inline-block;
+        }
+
+        .meta-item .editable:focus {
+            box-shadow: 0 0 0 3px rgba(255,105,180,0.12);
+        }
+
         .letter-content .message {
             padding: 12px 6px 6px 6px;
             position: relative;
@@ -275,6 +314,7 @@
             }
             .letter-content .message { max-height: calc(100% - 56px); }
             .scroll-indicator { right: 8px; bottom: 8px; font-size: 0.85em; }
+            .letter-meta { font-size: 0.95em; }
         }
 
         .corner-decoration {
@@ -400,31 +440,38 @@
                             keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"/>
                     </path>
                 </svg>
-                <button class="open-button">Abrir</button>
+                <button class="open-button" aria-expanded="false">Abrir</button>
             </div>
         </div>
-        <div class="letter">
+        <div class="letter" role="region" aria-label="Carta">
             <div class="letter-content">
                 <div class="corner-decoration top-left"></div>
                 <div class="corner-decoration top-right"></div>
                 <div class="corner-decoration bottom-left"></div>
                 <div class="corner-decoration bottom-right"></div>
+
+                <!-- Added: De: y Para: (editable) -->
+                <div class="letter-meta" aria-hidden="false">
+                    <div class="meta-item"><span>De:</span> <span class="editable from" contenteditable="true" aria-label="De">Stiven</span></div>
+                    <div class="meta-item"><span>Para:</span> <span class="editable to" contenteditable="true" aria-label="Para">Astrid</span></div>
+                </div>
+
                 <div class="message" aria-live="polite">
                     <!-- Aquí puedes escribir tu mensaje. Edita el HTML dentro de este <div class="message"> para cambiar el texto que ella verá al abrir la carta. -->
                     <h2 style="color: #FF4081; margin-bottom: 20px;">Te extraño</h2>
                     <div class="message-body">
                         <p style="margin-bottom: 15px;">
-                            Perdon por como me he comportado todo este tiempo, no he sabido manejar bien mis emociones y he cometido muchos errores, quiero que sepas que te amo con todo mi corazon y que eres lo mas importante para mi. Sé que debes estar enojada conmigo y entiendo, he sido un niño desde el primer momento en que terminamos y creeme que lo siento mucho. Te extraño demasiado y no puedo dejar de pensar en ti. Sé tambien que no podemos volver a estar juntos por distintas razones, pero quiero que sepas que siempre estaré aquí para ti, apoyándote en todo lo que necesites, quiero que estemos bien, como siempre te dije, siempre vas a ser alguien importante para mi, y aunque no estemos juntos, siempre te voy a cuidar desde la distancia. Si llegaras a necesitar algo, sabes que puedes contar conmigo, no importa la hora ni el dia, siempre voy a estar para ti.
+                            Perdon por como me he comportado todo este tiempo, no he sabido manejar bien mis emociones y he cometido muchos errores, quiero que sepas que te amo con todo mi corazon y q[...]
                         </p>
                         <p style="margin-bottom: 15px;">
                             Siempre te voy a amar y desear lo mejor para ti, porque te lo mereces. Gracias por todos los momentos hermosos que compartimos, siempre los voy a guardar en mi corazón.
                         </p>
                         <p style="margin-bottom: 15px;">
-                            Espero que podamos tener una buena relacion, que podamos seguir saliendo de vez en cuando, y que si llegaramos a encontrarnos en algun lugar sepa que puedo ir a darte un abrazo y saludarte con una sonrisa sin ningun problema.
+                            Espero que podamos tener una buena relacion, que podamos seguir saliendo de vez en cuando, y que si llegaramos a encontrarnos en algun lugar sepa que puedo ir a darte un ab[...]
                         </p>
 
                         <p style="margin-bottom: 15px;">
-                            Nunca fui capaz de hacerte una carta o expresar lo que sentia por ti por medio de palabras, pero hoy quiero intentarlo haciendo lo que mas me gusta a la persona que mas amo, porque te lo mereces. Eres una persona maravillosa y me siento afortunado de haberte tenido en mi vida. Gracias por todo lo que me diste, por tu amor, tu paciencia y tu comprensión. Siempre voy a recordarte con cariño y gratitud.
+                            Nunca fui capaz de hacerte una carta o expresar lo que sentia por ti por medio de palabras, pero hoy quiero intentarlo haciendo lo que mas me gusta a la persona que mas amo[...]
                         </p>
                         <p style="font-style: italic; color: #FF69B4; margin-bottom: 40px;">
                             Te amo 💞
@@ -440,8 +487,10 @@
         document.querySelector('.open-button').addEventListener('click', function() {
             const envelope = document.querySelector('.envelope');
             const letter = document.querySelector('.letter');
+            const btn = this;
             
             envelope.classList.add('opened');
+            btn.setAttribute('aria-expanded', 'true');
             
             setTimeout(() => {
                 letter.classList.add('visible');
@@ -451,10 +500,14 @@
         // Animación suave del oso
         const bearPaths = document.querySelectorAll('.bear-image path');
         bearPaths.forEach(path => {
-            const length = path.getTotalLength();
-            path.style.strokeDasharray = length;
-            path.style.strokeDashoffset = length;
-            path.style.animation = 'drawLine 2s ease forwards';
+            try {
+                const length = path.getTotalLength();
+                path.style.strokeDasharray = length;
+                path.style.strokeDashoffset = length;
+                path.style.animation = 'drawLine 2s ease forwards';
+            } catch (e) {
+                // algunos elementos (p.ej. grupos) no tienen getTotalLength, ignorar
+            }
         });
 
         // Añadir la animación de dibujo
@@ -506,6 +559,44 @@
             if (letter) observer.observe(letter, { attributes: true });
 
             setTimeout(updateIndicator, 400);
+        })();
+
+        // Persistir (localStorage) los campos "De:" y "Para:" para que no se pierdan al recargar
+        (function() {
+            const fromEl = document.querySelector('.from');
+            const toEl = document.querySelector('.to');
+
+            if (!fromEl || !toEl) return;
+
+            // cargar si existe
+            try {
+                const savedFrom = localStorage.getItem('letterFrom');
+                const savedTo = localStorage.getItem('letterTo');
+                if (savedFrom) fromEl.textContent = savedFrom;
+                if (savedTo) toEl.textContent = savedTo;
+            } catch (e) {
+                // si localStorage no está disponible, ignorar
+            }
+
+            // guardar cada vez que cambian
+            [fromEl, toEl].forEach(el => {
+                el.addEventListener('input', () => {
+                    const key = el.classList.contains('from') ? 'letterFrom' : 'letterTo';
+                    try {
+                        localStorage.setItem(key, el.textContent.trim());
+                    } catch (e) {}
+                });
+            });
+
+            // accesibilidad: permitir confirmación con Enter (evitar salto de línea)
+            [fromEl, toEl].forEach(el => {
+                el.addEventListener('keydown', (ev) => {
+                    if (ev.key === 'Enter') {
+                        ev.preventDefault();
+                        el.blur();
+                    }
+                });
+            });
         })();
     </script>
 </body>
