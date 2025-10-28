@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta Especial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: black;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            perspective: 1000px;
+        }
+
+        .envelope-container {
+            position: relative;
+            width: min(90vw, 400px);
+            height: min(78vh, 320px);
+            transition: transform 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .envelope {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 0 15px rgba(255, 182, 193, 0.8),
+                        0 0 30px rgba(255, 182, 193, 0.6),
+                        0 0 45px rgba(255, 182, 193, 0.4);
+            transform-style: preserve-3d;
+            transition: transform 1s ease;
+            overflow: hidden;
+        }
+
+        .envelope.opened {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ff69b4;
+        }
+
+        .bear-image {
+            width: 45%;
+            height: auto;
+            max-width: 220px;
+            margin-bottom: 12px;
+            animation: floatBear 3s ease-in-out infinite;
+            display: block;
+        }
+
+        @keyframes floatBear {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .heart {
+            transform-origin: center;
+            animation: heartBeat 1s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .thought-bubble {
+            animation: bubble 2s ease-in-out infinite;
+        }
+
+        @keyframes bubble {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-5px) scale(1.05);
+            }
+        }
+
+        .open-button {
+            padding: 12px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+            animation: pulse 1.5s infinite;
+            touch-action: manipulation;
+        }
+
+        .open-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px rgba(255, 105, 180, 0.7);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+            }
+        }
+
+        .letter {
+            position: absolute;
+            width: 92%;
+            height: 90%;
+            max-height: 92%;
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            opacity: 0;
+            transition: all 0.5s ease;
+            transform: translateY(20px);
+            visibility: hidden;
+            background-image: 
+                linear-gradient(90deg, rgba(255, 182, 193, 0.06) 1px, transparent 1px),
+                linear-gradient(rgba(255, 182, 193, 0.06) 1px, transparent 1px);
+            background-size: 20px 20px;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+        }
+
+        .letter.visible {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .letter-content {
+            height: 100%;
+            width: 100%;
+            border: 2px solid rgba(255, 105, 180, 0.3);
+            border-radius: 10px;
+            padding: 18px;
+            font-size: 1.02em;
+            line-height: 1.6;
+            color: #333;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fff 20%, #fff9fb 50%, #fff 80%);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .letter-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: 
+                linear-gradient(90deg, transparent 0%, rgba(255, 105, 180, 0.1) 50%, transparent 100%),
+                repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255, 105, 180, 0.05) 10px, rgba(255, 105, 180, 0.05) 20px);
+            border-bottom: 1px solid rgba(255, 105, 180, 0.2);
+        }
+
+        .letter-content::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: 
+                linear-gradient(90deg, transparent 0%, rgba(255, 105, 180, 0.1) 50%, transparent 100%),
+                repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255, 105, 180, 0.05) 10px, rgba(255, 105, 180, 0.05) 20px);
+            border-top: 1px solid rgba(255, 105, 180, 0.2);
+        }
+
+        .letter-content .message {
+            padding: 12px 6px 6px 6px;
+            position: relative;
+            z-index: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            max-height: calc(100% - 60px);
+            text-align: left;
+            padding-right: 14px; /* espacio para el scrollbar */
+        }
+
+        /* Scrollbar estilizada (WebKit + Firefox) */
+        .letter-content .message::-webkit-scrollbar { width: 10px; }
+        .letter-content .message::-webkit-scrollbar-track { background: transparent; }
+        .letter-content .message::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg,#ff9ac4,#ff5a9d);
+            border-radius: 10px;
+            box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
+        }
+        .letter-content .message { scrollbar-width: thin; scrollbar-color: #ff5a9d transparent; }
+
+        /* Indicador de 'bajar' */
+        .scroll-indicator {
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            background: rgba(255,255,255,0.95);
+            color: #ff4081;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: opacity .25s ease, transform .25s ease;
+            z-index: 3;
+        }
+        .scroll-indicator.hidden { opacity: 0; transform: translateY(8px); pointer-events: none; }
+
+        /* Mobile adjustments */
+        @media (max-width: 480px) {
+            .envelope-container {
+                width: 94vw;
+                height: 78vh;
+            }
+            .bear-image {
+                width: 140px;
+                height: 140px;
+                margin-bottom: 8px;
+            }
+            .open-button {
+                padding: 10px 22px;
+                font-size: 1.05em;
+            }
+            .letter {
+                width: 96%;
+                height: 86%;
+                padding: 12px;
+            }
+            .letter-content {
+                padding: 12px;
+            }
+            .letter-content .message { max-height: calc(100% - 56px); }
+            .scroll-indicator { right: 8px; bottom: 8px; font-size: 0.85em; }
+        }
+
+        .corner-decoration {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            z-index: 2;
+        }
+
+        .corner-decoration.top-left {
+            top: 10px;
+            left: 10px;
+            border-top: 3px solid rgba(255, 105, 180, 0.4);
+            border-left: 3px solid rgba(255, 105, 180, 0.4);
+        }
+
+        .corner-decoration.top-right {
+            top: 10px;
+            right: 10px;
+            border-top: 3px solid rgba(255, 105, 180, 0.4);
+            border-right: 3px solid rgba(255, 105, 180, 0.4);
+        }
+
+        .corner-decoration.bottom-left {
+            bottom: 10px;
+            left: 10px;
+            border-bottom: 3px solid rgba(255, 105, 180, 0.4);
+            border-left: 3px solid rgba(255, 105, 180, 0.4);
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 10px;
+            right: 10px;
+            border-bottom: 3px solid rgba(255, 105, 180, 0.4);
+            border-right: 3px solid rgba(255, 105, 180, 0.4);
+        }
+
+        .decorative-corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(255, 105, 180, 0.3);
+        }
+
+        .corner-top-left {
+            top: 5px;
+            left: 5px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-top-right {
+            top: 5px;
+            right: 5px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-bottom-left {
+            bottom: 5px;
+            left: 5px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-bottom-right {
+            bottom: 5px;
+            right: 5px;
+            border-left: none;
+            border-top: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="envelope-container">
+        <div class="envelope">
+            <div class="envelope-front">
+                <svg class="bear-image" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Cuerpo del oso -->
+                    <path class="bear-body" d="M60,70 Q100,60 140,70 Q150,120 140,150 Q100,170 60,150 Q50,120 60,70" fill="#FF9966" stroke="#663300" stroke-width="4"/>
+                    
+                    <!-- Orejas -->
+                    <circle cx="70" cy="75" r="15" fill="#FFB399"/>
+                    <circle cx="130" cy="75" r="15" fill="#FFB399"/>
+                    <circle cx="70" cy="75" r="10" fill="#FFD6CC"/>
+                    <circle cx="130" cy="75" r="10" fill="#FFD6CC"/>
+                    
+                    <!-- Cara -->
+                    <circle cx="100" cy="110" r="8" fill="#663300"/> <!-- nariz -->
+                    
+                    <!-- Ojos cerrados y felices -->
+                    <path d="M80,100 Q90,95 95,100" stroke="#663300" stroke-width="3" fill="none"/>
+                    <path d="M105,100 Q110,95 120,100" stroke="#663300" stroke-width="3" fill="none"/>
+                    
+                    <!-- Sonrisa -->
+                    <path d="M90,120 Q100,125 110,120" stroke="#663300" stroke-width="3" fill="none"/>
+                    
+                    <!-- Corazón mejorado -->
+                    <g transform="translate(0, 30) scale(0.7)">
+                        <path class="heart" d="M100,170 
+                            C75,155 65,135 65,120 
+                            C65,100 85,90 100,105 
+                            C115,90 135,100 135,120 
+                            C135,135 125,155 100,170" 
+                            fill="#FF6B9D" stroke="#FF4081" stroke-width="2">
+                            <animate attributeName="d" dur="1s" repeatCount="indefinite"
+                                values="M100,170 C75,155 65,135 65,120 C65,100 85,90 100,105 C115,90 135,100 135,120 C135,135 125,155 100,170;
+                                       M100,168 C75,153 65,133 65,118 C65,98 85,88 100,103 C115,88 135,98 135,118 C135,133 125,153 100,168;
+                                       M100,170 C75,155 65,135 65,120 C65,100 85,90 100,105 C115,90 135,100 135,120 C135,135 125,155 100,170"/>
+                        </path>
+                    </g>
+
+                    <!-- Patitas -->
+                    <ellipse cx="75" cy="155" rx="12" ry="8" fill="#FFB399"/>
+                    <ellipse cx="125" cy="155" rx="12" ry="8" fill="#FFB399"/>
+
+                    <!-- Burbuja de pensamiento con corazón -->
+                    <circle class="thought-bubble" cx="150" cy="60" r="15" fill="white" stroke="#FF4081" stroke-width="2"/>
+                    <path class="thought-heart" d="M145,60 Q150,55 155,60 Q158,65 150,70 Q142,65 145,60" fill="#FF4081">
+                        <animate attributeName="transform" dur="0.8s" repeatCount="indefinite"
+                            values="scale(1);scale(1.1);scale(1)"
+                            calcMode="spline"
+                            keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"/>
+                    </path>
+                </svg>
+                <button class="open-button">Abrir</button>
+            </div>
+        </div>
+        <div class="letter">
+            <div class="letter-content">
+                <div class="corner-decoration top-left"></div>
+                <div class="corner-decoration top-right"></div>
+                <div class="corner-decoration bottom-left"></div>
+                <div class="corner-decoration bottom-right"></div>
+                <div class="message" aria-live="polite">
+                    <!-- Aquí puedes escribir tu mensaje. Edita el HTML dentro de este <div class="message"> para cambiar el texto que ella verá al abrir la carta. -->
+                    <h2 style="color: #FF4081; margin-bottom: 20px;">Te extraño</h2>
+                    <div class="message-body">
+                        <p style="margin-bottom: 15px;">
+                            Perdon por como me he comportado todo este tiempo, no he sabido manejar bien mis emociones y he cometido muchos errores, quiero que sepas que te amo con todo mi corazon y que eres lo mas importante para mi. Sé que debes estar enojada conmigo y entiendo, he sido un niño desde el primer momento en que terminamos y creeme que lo siento mucho. Te extraño demasiado y no puedo dejar de pensar en ti. Sé tambien que no podemos volver a estar juntos por distintas razones, pero quiero que sepas que siempre estaré aquí para ti, apoyándote en todo lo que necesites, quiero que estemos bien, como siempre te dije, siempre vas a ser alguien importante para mi, y aunque no estemos juntos, siempre te voy a cuidar desde la distancia. Si llegaras a necesitar algo, sabes que puedes contar conmigo, no importa la hora ni el dia, siempre voy a estar para ti.
+                        </p>
+                        <p style="margin-bottom: 15px;">
+                            Siempre te voy a amar y desear lo mejor para ti, porque te lo mereces. Gracias por todos los momentos hermosos que compartimos, siempre los voy a guardar en mi corazón.
+                        </p>
+                        <p style="margin-bottom: 15px;">
+                            Espero que podamos tener una buena relacion, que podamos seguir saliendo de vez en cuando, y que si llegaramos a encontrarnos en algun lugar sepa que puedo ir a darte un abrazo y saludarte con una sonrisa sin ningun problema.
+                        </p>
+
+                        <p style="margin-bottom: 15px;">
+                            Nunca fui capaz de hacerte una carta o expresar lo que sentia por ti por medio de palabras, pero hoy quiero intentarlo haciendo lo que mas me gusta a la persona que mas amo, porque te lo mereces. Eres una persona maravillosa y me siento afortunado de haberte tenido en mi vida. Gracias por todo lo que me diste, por tu amor, tu paciencia y tu comprensión. Siempre voy a recordarte con cariño y gratitud.
+                        </p>
+                        <p style="font-style: italic; color: #FF69B4; margin-bottom: 40px;">
+                            Te amo 💞
+                        </p>
+                    </div>
+                    <div class="scroll-indicator">Bajar ↓</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.open-button').addEventListener('click', function() {
+            const envelope = document.querySelector('.envelope');
+            const letter = document.querySelector('.letter');
+            
+            envelope.classList.add('opened');
+            
+            setTimeout(() => {
+                letter.classList.add('visible');
+            }, 500);
+        });
+
+        // Animación suave del oso
+        const bearPaths = document.querySelectorAll('.bear-image path');
+        bearPaths.forEach(path => {
+            const length = path.getTotalLength();
+            path.style.strokeDasharray = length;
+            path.style.strokeDashoffset = length;
+            path.style.animation = 'drawLine 2s ease forwards';
+        });
+
+        // Añadir la animación de dibujo
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes drawLine {
+                to {
+                    stroke-dashoffset: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Scroll indicator logic for the letter message
+        (function() {
+            const messageEl = document.querySelector('.letter-content .message');
+            const indicator = document.querySelector('.scroll-indicator');
+            if (!messageEl || !indicator) return;
+
+            function updateIndicator() {
+                // show if scrollable and not at bottom
+                const canScroll = messageEl.scrollHeight > messageEl.clientHeight + 4;
+                const nearTop = messageEl.scrollTop < 10;
+                if (canScroll && nearTop) {
+                    indicator.classList.remove('hidden');
+                } else {
+                    indicator.classList.add('hidden');
+                }
+            }
+
+            // hide indicator when user scrolls down
+            messageEl.addEventListener('scroll', updateIndicator);
+            window.addEventListener('resize', updateIndicator);
+            // click indicator to scroll down a chunk
+            indicator.addEventListener('click', function() {
+                messageEl.scrollBy({ top: messageEl.clientHeight * 0.6, behavior: 'smooth' });
+                setTimeout(updateIndicator, 600);
+            });
+
+            // run once after letter appears (when visible class is added)
+            const observer = new MutationObserver(muts => {
+                for (const m of muts) {
+                    if (m.attributeName === 'class' && m.target.classList.contains('visible')) {
+                        setTimeout(updateIndicator, 300);
+                    }
+                }
+            });
+            const letter = document.querySelector('.letter');
+            if (letter) observer.observe(letter, { attributes: true });
+
+            setTimeout(updateIndicator, 400);
+        })();
+    </script>
+</body>
+</html>
